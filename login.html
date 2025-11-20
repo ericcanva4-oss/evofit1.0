@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login - EVO FITY | Treine Forte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Definindo as variáveis de cor para uso mais fácil e customizado */
+        :root {
+            --color-primary: #7f1d1d; /* Vermelho Escuro/Marrom - Força */
+            --color-accent: #fde047;  /* Amarelo Brilhante - Energia */
+            --color-dark: #1f2937;    /* Fundo Escuro */
+        }
+        /* Configuração de fonte - Inter é o padrão do Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo de foco personalizado para os inputs */
+        input:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px rgba(253, 224, 71, 0.5); /* Sombra do anel com a cor de destaque */
+        }
+    </style>
+</head>
+<!-- Fundo escuro para um visual mais 'power' de academia -->
+<body class="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+    
+    <!-- Card de Login - Fundo cinza escuro para contraste -->
+    <div class="w-full max-w-md bg-gray-800 p-8 sm:p-10 rounded-xl shadow-2xl border-t-4 border-[--color-primary] animate-fade-in-down">
+        
+        <!-- Título -->
+        <h1 class="text-3xl font-extrabold mb-6 text-center tracking-wider text-[--color-accent] drop-shadow-lg">
+            EVO FITY
+        </h1>
+        <p class="text-gray-400 text-center mb-8">Faça login para liberar seu potencial.</p>
+
+        <form id="login-form" class="space-y-6">
+            <div>
+                <!-- Label com cor de destaque sutil -->
+                <label for="username" class="block text-sm font-semibold text-gray-200 mb-1">Usuário</label>
+                <input 
+                    id="username" 
+                    class="mt-1 w-full border-2 border-gray-700 bg-gray-900 text-white rounded-lg px-4 py-3 transition duration-300" 
+                    required 
+                    placeholder="Seu nome de usuário"
+                />
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-semibold text-gray-200 mb-1">Senha</label>
+                <input 
+                    id="password" 
+                    type="password" 
+                    class="mt-1 w-full border-2 border-gray-700 bg-gray-900 text-white rounded-lg px-4 py-3 transition duration-300" 
+                    required 
+                    placeholder="Sua senha secreta"
+                />
+            </div>
+            
+            <!-- Mensagem de Erro com cor de destaque -->
+            <div id="error" class="text-sm text-[--color-accent] bg-gray-900 p-3 rounded-lg text-center hidden font-medium"></div>
+            
+            <!-- Botão de Ação (CTA) - Cor principal com texto de destaque -->
+            <button 
+                type="submit" 
+                class="w-full bg-[--color-primary] text-[--color-accent] py-3 rounded-lg font-bold text-lg uppercase transition duration-300 transform hover:scale-[1.02] hover:bg-red-900 shadow-xl shadow-[--color-primary]/50"
+            >
+                Entrar
+            </button>
+        </form>
+        
+        <!-- Dica de login - em cinza claro no fundo escuro -->
+        <p class="text-xs text-gray-500 mt-6 text-center border-t border-gray-700 pt-4">
+            Todos Direitos Reservados © 2025 Eric Novaes
+        </p>
+    </div>
+
+    <script>
+        // Credenciais hardcoded apenas para demo (INSEGURO)
+        const VALID_USER = 'eric';
+        const VALID_PASS = 'senha123';
+
+        document.getElementById('login-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const err = document.getElementById('error');
+
+            // Limpa o erro
+            err.classList.add('hidden');
+            err.textContent = ''; 
+
+            if(u === VALID_USER && p === VALID_PASS){
+                // Simulação de Sucesso
+                sessionStorage.setItem('loggedIn', 'true');
+                // Salva o nome de usuário para persistência por usuário
+                sessionStorage.setItem('username', u);
+                
+                // Redireciona para a página principal (após 500ms para o efeito visual)
+                setTimeout(() => {
+                    // Substitua 'index.html' pelo seu destino real
+                    location.replace('index.html'); 
+                }, 500); 
+
+            } else {
+                // Exibe a mensagem de erro com a cor de destaque
+                err.textContent = 'ERRO: Usuário ou senha incorretos. Tente novamente.';
+                err.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
