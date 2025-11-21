@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Música - EVO FITY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="treinos.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .music-player-container {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+        .music-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .playlist-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .playlist-item:hover {
+            transform: translateX(5px);
+            background-color: #fef3c7;
+        }
+        .playlist-item.active {
+            background-color: #fde047;
+            border-left: 4px solid #dc2626;
+        }
+        .music-progress {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .music-progress-bar {
+            height: 100%;
+            background-color: #dc2626;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #dc2626;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #dc2626;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- Cabeçalho Principal com Menu Hambúrguer -->
+    <header class="bg-red-800 text-white p-4 relative z-50">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span></h1>
+                <p class="text-sm mt-1">"Alcance seu Potencial!"</p>
+            </div>
+            <button id="menu-toggle" class="text-white focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Menu Dropdown (Hambúrguer) -->
+        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg z-50">
+            <nav class="flex flex-col p-4 space-y-2">
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">DIAS DE TREINO</div>
+                <a href="index.html#dia1" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Dia 1 | Peito & Tríceps</span>
+                </a>
+                <a href="index.html#dia2" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Dia 2 | Costas & Bíceps</span>
+                </a>
+                <a href="index.html#dia3" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Dia 3 | Pernas & Posterior</span>
+                </a>
+                <a href="index.html#dia4" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Dia 4 | Ombro & Tríceps</span>
+                </a>
+                <a href="index.html#dia5" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Dia 5 | Costa & Braços</span>
+                </a>
+                <hr class="border-red-700 my-2">
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">NUTRIÇÃO</div>
+                <a href="plano-alimentar.html" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>Plano Alimentar</span>
+                </a>
+                <hr class="border-red-700 my-2">
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">ENTRETENIMENTO</div>
+                <a href="music.html" class="menu-categoria text-yellow-300 font-bold bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>🎵 Músicas</span>
+                </a>
+                <hr class="border-red-700 my-2">
+                <button id="menu-logout" class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold flex items-center gap-2">
+                    <span>🚪 Sair</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Tocador de Música Principal -->
+    <main class="container mx-auto p-4 md:p-6 max-w-2xl">
+        <div class="music-card rounded-xl shadow-2xl p-8">
+            <!-- Título -->
+            <h1 class="text-3xl font-bold text-red-800 mb-2 text-center">🎵 Sua Trilha Sonora</h1>
+            <p class="text-gray-600 text-center mb-6">Música para potencializar seus treinos</p>
+
+            <!-- Reprodutor -->
+            <div class="music-player-container rounded-lg p-6 mb-6">
+                <!-- Informações da Música -->
+                <div class="text-white text-center mb-6">
+                    <h2 id="song-title" class="text-2xl font-bold mb-1">EVO FITY Workout Mix</h2>
+                    <p id="song-artist" class="text-yellow-200">Música de Treino</p>
+                </div>
+
+                <!-- Barra de Progresso -->
+                <div class="mb-4">
+                    <input type="range" id="progress-bar" class="w-full" min="0" max="100" value="0">
+                </div>
+
+                <!-- Tempo -->
+                <div class="text-white text-sm text-center mb-4 font-mono">
+                    <span id="current-time">0:00</span> / <span id="duration">0:00</span>
+                </div>
+
+                <!-- Controles Principais -->
+                <div class="flex justify-center items-center gap-4 mb-6">
+                    <button id="prev-btn" class="text-white hover:text-yellow-300 transition" title="Anterior">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4.555 5.478A1 1 0 003 6.5v7a1 1 0 001.555.832l5.387-3.5a1 1 0 000-1.664L4.555 5.478z"></path>
+                            <path d="M12.555 5.478A1 1 0 0011 6.5v7a1 1 0 001.555.832l5.387-3.5a1 1 0 000-1.664l-5.387-3.5z"></path>
+                        </svg>
+                    </button>
+                    <button id="play-btn" class="bg-yellow-300 hover:bg-yellow-400 text-red-800 font-bold py-3 px-8 rounded-full transition text-lg" title="Play">
+                        ▶️ Play
+                    </button>
+                    <button id="pause-btn" class="hidden bg-yellow-300 hover:bg-yellow-400 text-red-800 font-bold py-3 px-8 rounded-full transition text-lg" title="Pause">
+                        ⏸️ Pause
+                    </button>
+                    <button id="next-btn" class="text-white hover:text-yellow-300 transition" title="Próxima">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M15.445 5.478A1 1 0 0017 6.5v7a1 1 0 01-1.555.832l-5.387-3.5a1 1 0 010-1.664l5.387-3.5z"></path>
+                            <path d="M8.445 5.478A1 1 0 0010 6.5v7a1 1 0 01-1.555.832l-5.387-3.5a1 1 0 010-1.664L8.445 5.478z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Controles Secundários -->
+                <div class="flex justify-center items-center gap-6 text-white">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.383 3.076A1 1 0 0110 2h4a1 1 0 01.82.388l2.853 3.505a1 1 0 01.242 1.023l-1.07 3.292a1 1 0 01-.956.704H10a1 1 0 00-1 1v1H4a2 2 0 00-2 2v3.294l-.591-9.142a1 1 0 01.231-.997l2.752-2.368a1 1 0 00.405-.839V5.72a1 1 0 010-1.004B9.383 3.076z"></path>
+                        </svg>
+                        <input type="range" id="volume-slider" class="w-20 sm:w-32" min="0" max="100" value="70" title="Volume">
+                        <span id="volume-percent" class="text-sm">70%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlist -->
+            <div class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-red-800 mb-4">📋 Playlist</h3>
+                <div id="playlist" class="space-y-2 max-h-96 overflow-y-auto">
+                    <!-- Itens da playlist serão adicionados por JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Elemento de Áudio -->
+    <audio id="audio-player" style="display: none;"></audio>
+
+    <script>
+        // Lista de músicas (URLs públicas de exemplo)
+        const playlistData = [
+            {
+                title: 'Adrenaline Boost',
+                artist: 'EVO FITY',
+                url: 'music/music1.mp3'
+            },
+           
+        ];
+
+        let currentTrackIndex = 0;
+        const audioPlayer = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumePercent = document.getElementById('volume-percent');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const songTitle = document.getElementById('song-title');
+        const songArtist = document.getElementById('song-artist');
+        const playlistEl = document.getElementById('playlist');
+
+        // Carregar playlist
+        function loadPlaylist() {
+            playlistEl.innerHTML = '';
+            playlistData.forEach((song, index) => {
+                const div = document.createElement('div');
+                div.className = `playlist-item p-3 rounded-lg ${index === currentTrackIndex ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="font-semibold text-gray-800">${song.title}</div>
+                    <div class="text-sm text-gray-600">${song.artist}</div>
+                `;
+                div.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    loadTrack();
+                    audioPlayer.play();
+                    updatePlayPauseButtons();
+                    updatePlaylist();
+                });
+                playlistEl.appendChild(div);
+            });
+        }
+
+        // Carregar faixa
+        function loadTrack() {
+            const track = playlistData[currentTrackIndex];
+            audioPlayer.src = track.url;
+            songTitle.textContent = track.title;
+            songArtist.textContent = track.artist;
+            updatePlaylist();
+        }
+
+        // Atualizar playlist visual
+        function updatePlaylist() {
+            document.querySelectorAll('.playlist-item').forEach((item, index) => {
+                if (index === currentTrackIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Atualizar botões play/pause
+        function updatePlayPauseButtons() {
+            if (audioPlayer.paused) {
+                playBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+            } else {
+                playBtn.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+            }
+        }
+
+        // Play
+        playBtn.addEventListener('click', () => {
+            audioPlayer.play();
+            updatePlayPauseButtons();
+        });
+
+        // Pause
+        pauseBtn.addEventListener('click', () => {
+            audioPlayer.pause();
+            updatePlayPauseButtons();
+        });
+
+        // Próxima
+        nextBtn.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlistData.length;
+            loadTrack();
+            audioPlayer.play();
+            updatePlayPauseButtons();
+        });
+
+        // Anterior
+        prevBtn.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + playlistData.length) % playlistData.length;
+            loadTrack();
+            audioPlayer.play();
+            updatePlayPauseButtons();
+        });
+
+        // Barra de progresso
+        progressBar.addEventListener('input', (e) => {
+            if (audioPlayer.duration) {
+                audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration;
+            }
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (audioPlayer.duration) {
+                progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            }
+        });
+
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audioPlayer.duration);
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            nextBtn.click();
+        });
+
+        // Volume
+        volumeSlider.addEventListener('input', (e) => {
+            audioPlayer.volume = e.target.value / 100;
+            volumePercent.textContent = e.target.value + '%';
+        });
+
+        // Formatar tempo
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Inicializar
+        loadPlaylist();
+        loadTrack();
+        audioPlayer.volume = 0.7;
+    </script>
+
+</body>
+</html>

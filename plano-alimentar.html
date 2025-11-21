@@ -53,7 +53,7 @@
 <body class="antialiased min-h-screen">
 
     <!-- Cabeçalho Principal com Menu Hambúrguer -->
-    <header class="bg-red-800 text-white p-4 relative">
+    <header class="bg-red-800 text-white p-4 relative z-50">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span>
@@ -70,7 +70,7 @@
         </div>
 
         <!-- Menu Dropdown (Hambúrguer) -->
-        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
+        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg z-50">
             <nav class="flex flex-col p-4 space-y-2">
                 <!-- Seção de Treinos -->
                 <div class="text-yellow-300 font-bold text-sm px-4 py-2">DIAS DE TREINO</div>
@@ -109,6 +109,17 @@
                     class="menu-categoria text-yellow-300 font-bold bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
                     <span>🍽️</span>
                     <span>Plano Alimentar</span>
+                </a>
+
+                <hr class="border-red-700 my-2">
+
+                <!-- Seção de Entretenimento -->
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">ENTRETENIMENTO</div>
+
+                <a href="music.html"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>🎵</span>
+                    <span>Músicas</span>
                 </a>
 
                 <hr class="border-red-700 my-2">

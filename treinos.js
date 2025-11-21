@@ -7,6 +7,86 @@ let modal, modalTitulo, modalSeries, modalReps, modalCarga, modalTecnica, modalG
 let inputSeries, inputReps, inputWeight, overloadSuggestion, btnSalvar, validationMessage;
 
 // -----------------------------
+// Tocador de Música
+// -----------------------------
+let musicPlayer = null;
+let musicPlayBtn = null;
+let musicPauseBtn = null;
+let musicVolume = null;
+let musicTime = null;
+
+function inicializarMusicPlayer() {
+    musicPlayer = document.getElementById('music-player');
+    musicPlayBtn = document.getElementById('music-play-btn');
+    musicPauseBtn = document.getElementById('music-pause-btn');
+    musicVolume = document.getElementById('music-volume');
+    musicTime = document.getElementById('music-time');
+
+    if (!musicPlayer || !musicPlayBtn || !musicPauseBtn || !musicVolume || !musicTime) return;
+
+    // Play button
+    if (musicPlayBtn) {
+        musicPlayBtn.addEventListener('click', () => {
+            if (musicPlayer.paused) {
+                musicPlayer.play();
+                musicPlayBtn.classList.add('hidden');
+                musicPauseBtn.classList.remove('hidden');
+            }
+        });
+    }
+
+    // Pause button
+    if (musicPauseBtn) {
+        musicPauseBtn.addEventListener('click', () => {
+            musicPlayer.pause();
+            musicPauseBtn.classList.add('hidden');
+            musicPlayBtn.classList.remove('hidden');
+        });
+    }
+
+    // Volume control
+    if (musicVolume) {
+        musicVolume.addEventListener('input', (e) => {
+            musicPlayer.volume = e.target.value / 100;
+        });
+        musicPlayer.volume = 0.7; // 70% inicial
+    }
+
+    // Update time display
+    if (musicPlayer && musicTime) {
+        musicPlayer.addEventListener('timeupdate', () => {
+            const current = Math.floor(musicPlayer.currentTime);
+            const duration = Math.floor(musicPlayer.duration) || 0;
+            const currentMin = Math.floor(current / 60);
+            const currentSec = current % 60;
+            const durationMin = Math.floor(duration / 60);
+            const durationSec = duration % 60;
+            musicTime.textContent = `${currentMin}:${String(currentSec).padStart(2, '0')} / ${durationMin}:${String(durationSec).padStart(2, '0')}`;
+        });
+    }
+
+    // Reset on end
+    if (musicPlayer) {
+        musicPlayer.addEventListener('ended', () => {
+            musicPauseBtn.classList.add('hidden');
+            musicPlayBtn.classList.remove('hidden');
+            musicPlayer.currentTime = 0;
+        });
+    }
+
+    // Autoplay com atraso de 0,5s
+    setTimeout(() => {
+        if (musicPlayer && musicPlayer.paused) {
+            musicPlayer.play().catch(err => {
+                console.log('Autoplay bloqueado pelo navegador:', err);
+            });
+            musicPlayBtn.classList.add('hidden');
+            musicPauseBtn.classList.remove('hidden');
+        }
+    }, 500);
+}
+
+// -----------------------------
 // Cronômetro de Descanso
 // -----------------------------
 let timerInterval = null;
@@ -355,6 +435,9 @@ function inicializarModal() {
 
     // Inicializa o cronômetro (elementos do DOM já estão disponíveis aqui)
     inicializarCronometro();
+
+    // Inicializa o tocador de música
+    inicializarMusicPlayer();
 
     // Persistência ao editar inputs: salva carga/reps por treino para o usuário
     function persistCurrentInputs() {

@@ -16,7 +16,7 @@
 <body class="antialiased min-h-screen">
 
     <!-- Cabeçalho Principal com Menu Hambúrguer -->
-    <header class="bg-red-800 text-white p-4 relative">
+    <header class="bg-red-800 text-white p-4 relative z-50">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span>
@@ -32,8 +32,24 @@
             </button>
         </div>
 
+        <!-- Tocador de Música -->
+        <div class="mt-3 flex justify-center items-center gap-2 bg-red-700 rounded-lg p-2 flex-wrap">
+            <button id="music-play-btn" class="text-yellow-300 hover:text-yellow-400 transition" title="Play">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path>
+                </svg>
+            </button>
+            <button id="music-pause-btn" class="hidden text-yellow-300 hover:text-yellow-400 transition" title="Pause">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.75 1.5A.75.75 0 004 2.25v15.5a.75.75 0 001.5 0V2.25A.75.75 0 005.75 1.5zm8.5 0A.75.75 0 0012 2.25v15.5a.75.75 0 001.5 0V2.25a.75.75 0 00-1.5 0z"></path>
+                </svg>
+            </button>
+            <input type="range" id="music-volume" class="w-16 sm:w-20 h-1 bg-red-500 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="70" title="Volume">
+            <span id="music-time" class="text-white text-xs font-semibold">0:00 / 0:00</span>
+        </div>
+
         <!-- Menu Dropdown (Hambúrguer) -->
-        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
+        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg z-50">
             <nav class="flex flex-col p-4 space-y-2">
                 <!-- Seção de Treinos -->
                 <div class="text-yellow-300 font-bold text-sm px-4 py-2">DIAS DE TREINO</div>
@@ -68,6 +84,17 @@
                     class="menu-categoria text-yellow-300 font-bold bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
                     <span>🍽️</span>
                     <span>Plano Alimentar</span>
+                </a>
+
+                <hr class="border-red-700 my-2">
+
+                <!-- Seção de Entretenimento -->
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">ENTRETENIMENTO</div>
+
+                <a href="music.html"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>🎵</span>
+                    <span>Músicas</span>
                 </a>
 
                 <hr class="border-red-700 my-2">
@@ -984,10 +1011,13 @@
             <div id="validation-message" class="mt-4 text-center text-red-600 font-semibold hidden"></div>
 
         </div>
-        </section>
+    </section>
 
-        </main>
+</main>
 
-</body>
+<!-- Elemento de Áudio Oculto -->
+<audio id="music-player" style="display: none;">
+    <source src="music/music1.mp3" type="audio/mpeg">
+</audio></body>
 
 </html>
