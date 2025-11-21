@@ -7,6 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="treinos.js" defer></script>
+    
+    <!-- Verificação de autenticação imediata (bloqueante) -->
+    <script>
+        if (!sessionStorage.getItem('loggedIn')) {
+            window.location.replace('login.html');
+        }
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
