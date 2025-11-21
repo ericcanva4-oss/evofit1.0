@@ -6,16 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EVO FITY</title>
 
-    <!-- Script de autenticação ANTES de qualquer conteúdo -->
-    <script>
-        (function () {
-            const path = location.pathname.split('/').pop();
-            if (path === 'login.html') return;
-            if (!sessionStorage.getItem('loggedIn')) {
-                location.replace('login.html');
-            }
-        })();
-    </script>
     <!-- Incluindo Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
@@ -42,49 +32,95 @@
                 </button>
             </div>
 
-            <div>
-                <!-- Seção do Cronômetro de Descanso (FORA DO HEADER para não ficar fixo na barra superior) -->
-                <section class="max-w-4xl mx-auto px-4 pt-4 pb-2">
-                    <div class="bg-gray-800 text-white rounded-xl shadow-lg p-4 text-center">
-                        <h2 class="text-xl font-bold mb-3 text-yellow-300">Cronômetro de Descanso</h2>
-                        <div id="timer-display" class="text-6xl md:text-7xl font-mono font-extrabold mb-4 text-red-400">
-                            01:00</div>
-
-                        <div class="flex justify-center space-x-4">
-                            <button id="start-pause-btn"
-                                class="px-5 py-3 text-lg font-semibold rounded-full bg-green-600 hover:bg-green-700 transition duration-200 shadow-md active:scale-95">
-                                Iniciar
-                            </button>
-                            <button id="reset-btn"
-                                class="px-5 py-3 text-lg font-semibold rounded-full bg-gray-500 hover:bg-gray-600 transition duration-200 shadow-md active:scale-95">
-                                Reiniciar
-                            </button>
-                        </div>
-                        <!-- Menu Dropdown (Hambúrguer) -->
-                        <div id="menu-dropdown"
-                            class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
-                            <nav class="flex flex-col p-4 space-y-3">
-                                <a href="#dia1"
-                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
-                                    1 - Peito & Tríceps</a>
-                                <a href="#dia2"
-                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
-                                    2 - Costas & Bíceps</a>
-                                <a href="#dia3"
-                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
-                                    3 - Pernas & Posterior</a>
-                                <a href="#dia4"
-                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
-                                    4 - Ombro & Tríceps</a>
-                                <a href="#dia5"
-                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
-                                    5 - Costa & Braços</a>
-                                <hr class="border-red-700">
-                                <button id="menu-logout"
-                                    class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold">Sair</button>
-                            </nav>
-                        </div>
+            <!-- Menu Dropdown (Hambúrguer) -->
+            <div id="menu-dropdown"
+                class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
+                <nav class="flex flex-col p-4 space-y-2">
+                    <!-- Seção de Treinos -->
+                    <div class="text-yellow-300 font-bold text-sm px-4 py-2">DIAS DE TREINO</div>
+                    
+                    <a href="#dia1"
+                        class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>📅</span>
+                        <span>Segunda - Peito & Tríceps</span>
+                    </a>
+                    <a href="#dia2"
+                        class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>📅</span>
+                        <span>Terça - Costas & Bíceps</span>
+                    </a>
+                    <a href="#dia3"
+                        class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>📅</span>
+                        <span>Quarta - Pernas & Posterior</span>
+                    </a>
+                    <a href="#dia4"
+                        class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>📅</span>
+                        <span>Quinta - Ombro & Tríceps</span>
+                    </a>
+                    <a href="#dia5"
+                        class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>📅</span>
+                        <span>Sexta - Costa & Braços</span>
+                    </a>
+                    
+                    <hr class="border-red-700 my-2">
+                    
+                    <!-- Seção de Nutrição -->
+                    <div class="text-yellow-300 font-bold text-sm px-4 py-2">NUTRIÇÃO</div>
+                    
+                    <a href="plano-alimentar.html"
+                        class="menu-categoria text-yellow-300 font-bold bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                        <span>🍽️</span>
+                        <span>Plano Alimentar</span>
+                    </a>
+                    
+                    <hr class="border-red-700 my-2">
+                    
+                    <button id="menu-logout"
+                        class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold flex items-center gap-2">
+                        <span>🚪</span>
+                        <span>Sair</span>
+                    </button>
+                </nav>
+            </div>
         </header>
+
+        <!-- Botão Flutuante do Cronômetro (canto inferior direito) -->
+        <button id="timer-floating-btn" class="timer-floating-btn" title="Abrir cronômetro">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="timer-icon">
+                <circle cx="12" cy="13" r="8"></circle>
+                <path d="M12 9v4l3 2"></path>
+                <path d="M7 3h10"></path>
+            </svg>
+        </button>
+
+        <!-- Modal do Cronômetro -->
+        <div id="timer-modal" class="timer-modal hidden">
+            <div class="timer-modal-overlay"></div>
+            <div class="timer-modal-content">
+                <div class="timer-modal-header">
+                    <h2 class="text-2xl font-bold text-yellow-300">Cronômetro de Descanso</h2>
+                    <button id="timer-modal-close" class="timer-modal-close">&times;</button>
+                </div>
+                <div class="timer-modal-body">
+                    <div id="timer-display" class="text-7xl font-mono font-extrabold mb-6 text-red-400 text-center">
+                        01:00
+                    </div>
+                    <div class="flex justify-center gap-4">
+                        <button id="start-pause-btn"
+                            class="px-6 py-3 text-lg font-semibold rounded-full bg-green-600 hover:bg-green-700 transition duration-200 shadow-md active:scale-95">
+                            Iniciar
+                        </button>
+                        <button id="reset-btn"
+                            class="px-6 py-3 text-lg font-semibold rounded-full bg-gray-500 hover:bg-gray-600 transition duration-200 shadow-md active:scale-95">
+                            Reiniciar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -928,10 +964,10 @@
                 <div id="validation-message" class="mt-4 text-center text-red-600 font-semibold hidden"></div>
 
             </div>
-        </div>
+        </section>
 
+    </main>
 
-
-    </body>
+</body>
 
 </html>

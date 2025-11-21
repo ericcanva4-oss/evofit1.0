@@ -47,3 +47,253 @@ body {
 
 /* Ajustes simples para o display do cronômetro quando usado sem Tailwind */
 #timer-display { font-variant-numeric: tabular-nums; }
+
+/* Botão Flutuante do Cronômetro */
+.timer-floating-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    border: 3px solid #fde047;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 40;
+    transition: all 0.3s ease-in-out;
+}
+
+.timer-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.timer-floating-btn:active {
+    transform: scale(0.95);
+}
+
+.timer-floating-btn img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.timer-icon {
+    width: 58px;
+    height: 58px;
+    color: #fde047;
+    stroke: #fde047;
+}
+
+/* Modal do Cronômetro */
+.timer-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.timer-modal.hidden {
+    display: none;
+}
+
+.timer-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+}
+
+.timer-modal-content {
+    position: relative;
+    background: linear-gradient(135deg, #1f2937, #374151);
+    border: 2px solid #7f1d1d;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.timer-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #fde047;
+    padding-bottom: 1rem;
+}
+
+.timer-modal-header h2 {
+    color: #fde047;
+    margin: 0;
+}
+
+.timer-modal-close {
+    background: none;
+    border: none;
+    color: #fde047;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.timer-modal-close:hover {
+    transform: scale(1.2);
+}
+
+.timer-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+}
+
+/* Estilos para Plano Alimentar */
+.meal-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.meal-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.meal-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.meal-table thead {
+    background-color: #fef3c7;
+    border-bottom: 2px solid #f59e0b;
+}
+
+.meal-table th {
+    padding: 1rem;
+    font-weight: 700;
+    color: #92400e;
+}
+
+.meal-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.meal-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.meal-card-pre-workout .meal-table thead {
+    background-color: #fef08a;
+    border-bottom: 2px solid #fde047;
+}
+
+.meal-card-pre-workout .meal-table th {
+    color: #78350f;
+}
+
+.meal-card-post-workout .meal-table thead {
+    background-color: #dcfce7;
+    border-bottom: 2px solid #86efac;
+}
+
+.meal-card-post-workout .meal-table th {
+    color: #15803d;
+}
+
+.meal-card-rest .meal-table thead {
+    background-color: #dbeafe;
+    border-bottom: 2px solid #93c5fd;
+}
+
+.meal-card-rest .meal-table th {
+    color: #1e40af;
+}
+
+.meal-card-supplement .meal-table thead {
+    background-color: #cffafe;
+    border-bottom: 2px solid #67e8f9;
+}
+
+.meal-card-supplement .meal-table th {
+    color: #0e7490;
+}
+
+.hydration-info {
+    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+    color: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hydration-info h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.875rem;
+    font-weight: 800;
+}
+
+.hydration-info p {
+    margin: 0.5rem 0;
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+    .timer-floating-btn {
+        width: 60px;
+        height: 60px;
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .timer-floating-btn img {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .timer-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .timer-modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .meal-table th,
+    .meal-table td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}

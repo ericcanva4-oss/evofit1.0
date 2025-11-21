@@ -1,3 +1,4 @@
+// Proteção de autenticação - Executa após DOM estar pronto
 // Variável global para armazenar o ID do treino/exercício atual no modal
 let currentTreinoId = null;
 
@@ -101,11 +102,35 @@ function inicializarCronometro() {
     timerDisplayEl = document.getElementById('timer-display');
     startPauseBtnEl = document.getElementById('start-pause-btn');
     resetBtnEl = document.getElementById('reset-btn');
-    timerContainerEl = document.querySelector('.bg-gray-800');
+    timerContainerEl = document.querySelector('.timer-modal-content');
     if (!timerDisplayEl) return;
     updateTimerDisplay();
     if (startPauseBtnEl) startPauseBtnEl.addEventListener('click', toggleTimer);
     if (resetBtnEl) resetBtnEl.addEventListener('click', () => resetTimer(defaultTime));
+    
+    // Inicializar modal do cronômetro
+    const timerModal = document.getElementById('timer-modal');
+    const timerFloatingBtn = document.getElementById('timer-floating-btn');
+    const timerModalClose = document.getElementById('timer-modal-close');
+    const timerModalOverlay = document.querySelector('.timer-modal-overlay');
+    
+    if (timerFloatingBtn) {
+        timerFloatingBtn.addEventListener('click', () => {
+            if (timerModal) timerModal.classList.remove('hidden');
+        });
+    }
+    
+    if (timerModalClose) {
+        timerModalClose.addEventListener('click', () => {
+            if (timerModal) timerModal.classList.add('hidden');
+        });
+    }
+    
+    if (timerModalOverlay) {
+        timerModalOverlay.addEventListener('click', () => {
+            if (timerModal) timerModal.classList.add('hidden');
+        });
+    }
 }
 
 
@@ -307,6 +332,13 @@ function mostrarTreino(diaId) {
 
 // Inicializa os elementos do modal quando o DOM estiver pronto
 function inicializarModal() {
+    // Proteção de autenticação
+    const path = location.pathname.split('/').pop();
+    if (path !== 'login.html' && !sessionStorage.getItem('loggedIn')) {
+        location.replace('login.html');
+        return;
+    }
+
     modal = document.getElementById('performance-modal');
     modalTitulo = document.getElementById('modal-titulo');
     modalSeries = document.getElementById('modal-series');
@@ -373,15 +405,30 @@ function inicializarModal() {
         });
     });
 
-    // Fecha o modal ao clicar fora
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    // Fecha o modal ao clicar fora (só se o modal existir nesta página)
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
 
-    // Mostra o Dia 1 por padrão
-    mostrarTreino('dia1');
+    // Se a URL tiver hash (ex: index.html#dia3) e a seção existir, mostra o dia correspondente.
+    const currentHash = location.hash;
+    if (currentHash) {
+        const targetId = currentHash.replace('#', '');
+        if (document.getElementById(targetId)) {
+            mostrarTreino(targetId);
+        } else if (document.getElementById('dia1')) {
+            mostrarTreino('dia1');
+        }
+    } else {
+        // Mostra o Dia 1 por padrão (só se a seção existir nesta página)
+        if (document.getElementById('dia1')) {
+            mostrarTreino('dia1');
+        }
+    }
 
     // Funcionalidade do Menu Hambúrguer
     const menuToggle = document.getElementById('menu-toggle');
@@ -389,31 +436,58 @@ function inicializarModal() {
     const menuLogout = document.getElementById('menu-logout');
     const menuCategorias = document.querySelectorAll('.menu-categoria');
 
-    menuToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        menuDropdown.classList.toggle('hidden');
-    });
-
-    menuCategorias.forEach(categoria => {
-        categoria.addEventListener('click', (e) => {
-            e.preventDefault();
+    if (menuToggle) {
+        menuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            const diaId = categoria.getAttribute('href').substring(1);
-            menuDropdown.classList.add('hidden');
-            setTimeout(() => {
-                mostrarTreino(diaId);
-            }, 50);
+            menuDropdown.classList.toggle('hidden');
         });
-    });
+    }
 
-    menuLogout.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sessionStorage.removeItem('loggedIn');
-        location.replace('login.html');
-    });
+    if (menuCategorias.length > 0) {
+        menuCategorias.forEach(categoria => {
+            categoria.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const href = categoria.getAttribute('href') || '';
 
+                // Se for um link externo (plano-alimentar.html), navega normalmente
+                if (!href.startsWith('#')) {
+                    window.location.href = href;
+                    return;
+                }
+
+                // Se for um anchor (#dia1, #dia2, etc), tenta mostrar o treino
+                const diaId = href.substring(1);
+
+                // Se a seção não existir nesta página, redireciona para index.html com hash
+                if (!document.getElementById(diaId)) {
+                    if (menuDropdown) menuDropdown.classList.add('hidden');
+                    window.location.href = `index.html#${diaId}`;
+                    return;
+                }
+
+                // Se existir, apenas mostra o treino e fecha o menu
+                if (menuDropdown) menuDropdown.classList.add('hidden');
+                setTimeout(() => {
+                    mostrarTreino(diaId);
+                }, 50);
+            });
+        });
+    }
+
+    if (menuLogout) {
+        menuLogout.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sessionStorage.removeItem('loggedIn');
+            location.replace('login.html');
+        });
+    }
+
+    // Fechar menu ao clicar fora dele
     document.addEventListener('click', (e) => {
-        if (!menuToggle.contains(e.target) && !menuDropdown.contains(e.target)) {
+        if (menuToggle && menuDropdown && 
+            !menuToggle.contains(e.target) && 
+            !menuDropdown.contains(e.target)) {
             menuDropdown.classList.add('hidden');
         }
     });

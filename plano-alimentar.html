@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Alimentar - Ganho de Massa e Definição</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="treinos.js" defer></script>
+    <style>
+        /* Define a fonte Inter como padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        /* Estilos customizados para a visualização no canvas */
+        .card-bg {
+            background-image: linear-gradient(135deg, #f0f4f8 0%, #eef1f5 100%);
+        }
+        .meal-header {
+            border-left: 4px solid #3b82f6; /* Blue-500 */
+        }
+        .meal-item {
+            border-bottom: 1px dashed #d1d5db; /* Gray-300 */
+        }
+        /* Estilos específicos para Pós-Treino e Hidratação */
+        .post-treino-bg {
+            background-color: #eff6ff; /* Blue-50 */
+        }
+        .descanso-bg {
+            background-color: #f0fdf4; /* Green-50 */
+        }
+        .hydration-box {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5), 0 2px 4px -2px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- Cabeçalho Principal com Menu Hambúrguer -->
+    <header class="bg-red-800 text-white p-4 relative">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span></h1>
+                <p class="text-sm mt-1">"Alcance seu Potencial!"</p>
+            </div>
+            <!-- Botão do Menu Hambúrguer -->
+            <button id="menu-toggle" class="text-white focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Menu Dropdown (Hambúrguer) -->
+        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
+            <nav class="flex flex-col p-4 space-y-2">
+                <!-- Seção de Treinos -->
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">DIAS DE TREINO</div>
+                
+                <a href="#dia1"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>📅</span>
+                    <span>Segunda - Peito & Tríceps</span>
+                </a>
+                <a href="#dia2"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>📅</span>
+                    <span>Terça - Costas & Bíceps</span>
+                </a>
+                <a href="#dia3"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>📅</span>
+                    <span>Quarta - Pernas & Posterior</span>
+                </a>
+                <a href="#dia4"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>📅</span>
+                    <span>Quinta - Ombro & Tríceps</span>
+                </a>
+                <a href="#dia5"
+                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>📅</span>
+                    <span>Sexta - Costa & Braços</span>
+                </a>
+                
+                <hr class="border-red-700 my-2">
+                
+                <!-- Seção de Nutrição -->
+                <div class="text-yellow-300 font-bold text-sm px-4 py-2">NUTRIÇÃO</div>
+                
+                <a href="plano-alimentar.html"
+                    class="menu-categoria text-yellow-300 font-bold bg-red-800 px-4 py-2 rounded transition duration-200 flex items-center gap-2">
+                    <span>🍽️</span>
+                    <span>Plano Alimentar</span>
+                </a>
+                
+                <hr class="border-red-700 my-2">
+                
+                <button id="menu-logout"
+                    class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold flex items-center gap-2">
+                    <span>🚪</span>
+                    <span>Sair</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Botão Flutuante do Cronômetro -->
+    <button id="timer-floating-btn" class="timer-floating-btn" title="Abrir cronômetro">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="timer-icon">
+            <circle cx="12" cy="13" r="8"></circle>
+            <path d="M12 9v4l3 2"></path>
+            <path d="M7 3h10"></path>
+        </svg>
+    </button>
+
+    <!-- Modal do Cronômetro -->
+    <div id="timer-modal" class="timer-modal hidden">
+        <div class="timer-modal-overlay"></div>
+        <div class="timer-modal-content">
+            <div class="timer-modal-header">
+                <h2 class="text-2xl font-bold text-yellow-300">Cronômetro de Descanso</h2>
+                <button id="timer-modal-close" class="timer-modal-close">&times;</button>
+            </div>
+            <div class="timer-modal-body">
+                <div id="timer-display" class="text-7xl font-mono font-extrabold mb-6 text-red-400 text-center">01:00</div>
+                <div class="flex justify-center gap-4">
+                    <button id="start-pause-btn" class="px-6 py-3 text-lg font-semibold rounded-full bg-green-600 hover:bg-green-700 transition duration-200 shadow-md active:scale-95">Iniciar</button>
+                    <button id="reset-btn" class="px-6 py-3 text-lg font-semibold rounded-full bg-gray-500 hover:bg-gray-600 transition duration-200 shadow-md active:scale-95">Reiniciar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="p-4 sm:p-8">
+
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden card-bg">
+            
+            <!-- Header -->
+            <header class="p-6 bg-blue-600 text-white text-center">
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                    💪 Plano Alimentar
+                </h1>
+                <p class="mt-2 text-blue-100 text-lg">
+                    Foco em Massa Muscular e Energia 
+                </p>
+            </header>
+
+            <!-- Container Principal do Plano -->
+            <section class="p-4 sm:p-8 space-y-8">
+
+                <!-- Hidratação e Suplementação -->
+                <div class="space-y-4">
+                    <div class="hydration-box p-4 rounded-lg flex items-center justify-between">
+                        <h2 class="text-xl font-bold flex items-center">
+                            💧 HIDRATAÇÃO CRUCIAL
+                        </h2>
+                        <p class="text-2xl font-extrabold tracking-wider">
+                            3,5 a 4,0 Litros / Dia
+                        </p>
+                    </div>
+                    
+                    <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-blue-800 mb-3">💊 Suplementação Diária (Segunda a Domingo)</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="p-3 bg-white rounded-md shadow-sm">
+                                <p class="font-semibold text-gray-700">Whey Protein (30g)</p>
+                                <p class="text-sm text-green-600">Pós-Treino</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-md shadow-sm">
+                                <p class="font-semibold text-gray-700">Creatina (3g a 5g)</p>
+                                <p class="text-sm text-green-600">Qualquer hora (Melhor: Café da Manhã)</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-md shadow-sm">
+                                <p class="font-semibold text-gray-700">BCAA (5g)</p>
+                                <p class="text-sm text-green-600">Pós-Treino</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabela de Refeições -->
+                <div class="space-y-6">
+                    
+                    <!-- Refeição 1: Café da Manhã -->
+                    <div class="bg-white p-5 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3 meal-header pl-2">☀️ Café da Manhã</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Ovos Mexidos/Cozidos:</span> <span class="font-semibold">3 a 4 unidades</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Cuscuz (Flocus):</span> <span class="font-semibold">1/2 xícara de flocão</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Leite Desnatado/Semi:</span> <span class="font-semibold">200 ml</span></li>
+                            <li class="flex justify-between p-1"><span>Fruta Barata (Ex: Banana, Laranja, Mamão):</span> <span class="font-semibold">1 unidade</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Refeição 2: Lanche da Manhã -->
+                    <div class="bg-white p-5 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3 meal-header pl-2">🧺 Lanche da Manhã</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Pão Integral:</span> <span class="font-semibold">2 fatias</span></li>
+                            <li class="flex justify-between p-1"><span>Pasta de Atum/Sardinha (em água/azeite):</span> <span class="font-semibold">1 lata média</span></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Refeição 3: Pré-Treino -->
+                    <div class="bg-yellow-100 p-5 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                        <h3 class="text-2xl font-bold text-yellow-800 mb-3 meal-header pl-2">🏋️ PRÉ-TREINO (30-60 min antes)</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Batata-Doce Cozida:</span> <span class="font-semibold">100g a 150g</span></li>
+                            <li class="flex justify-between p-1"><span>Café Preto:</span> <span class="font-semibold">1 xícara pequena</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Refeição 4: Almoço -->
+                    <div class="bg-white p-5 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3 meal-header pl-2">🍽️ Almoço</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Aipim (Mandioca) Cozido:</span> <span class="font-semibold">150g a 200g</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Carne Magra (Ex: Frango, Patinho, Tilápia):</span> <span class="font-semibold">120g a 150g</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Arroz:</span> <span class="font-semibold">3 a 4 colheres de sopa</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Feijão:</span> <span class="font-semibold">1 concha média</span></li>
+                            <li class="flex justify-between p-1"><span>Salada e Legumes:</span> <span class="font-semibold">À vontade</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Refeição 5: Pós-Treino (Diferenciado) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Dias de Treino -->
+                        <div class="p-5 rounded-xl shadow-lg post-treino-bg border-l-4 border-blue-500">
+                            <h3 class="text-xl font-bold text-blue-700 mb-3 pl-2">🚀 PÓS-TREINO (Dias de Treino)</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li class="meal-item flex justify-between p-1"><span>Whey Protein:</span> <span class="font-semibold">1 scoop</span></li>
+                                <li class="meal-item flex justify-between p-1"><span>Fruta Rápida (Ex: Banana madura, Uvas):</span> <span class="font-semibold">1 unidade</span></li>
+                                <li class="flex justify-between p-1"><span>BCAA:</span> <span class="font-semibold">5g</span></li>
+                            </ul>
+                        </div>
+                        <!-- Dias de Descanso -->
+                        <div class="p-5 rounded-xl shadow-lg descanso-bg border-l-4 border-green-500">
+                            <h3 class="text-xl font-bold text-green-700 mb-3 pl-2">🧘 PÓS-TREINO (Dias de Descanso: Qua, Dom)</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li class="meal-item flex justify-between p-1"><span>Ovos Cozidos:</span> <span class="font-semibold">3 a 4 unidades</span></li>
+                                <li class="flex justify-between p-1"><span>Batata-Doce Cozida:</span> <span class="font-semibold">100g</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Refeição 6: Lanche da Tarde / Jantar Leve -->
+                    <div class="bg-white p-5 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3 meal-header pl-2">🍎 Jantar Leve</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Omelete:</span> <span class="font-semibold">3 ovos + 1 gema</span></li>
+                            <li class="meal-item flex justify-between p-1"><span>Aipim (Mandioca) Cozido:</span> <span class="font-semibold">150g</span></li>
+                            <li class="flex justify-between p-1"><span>Tomate e Cebola:</span> <span class="font-semibold">À vontade</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Refeição 7: Ceia -->
+                    <div class="bg-gray-50 p-5 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3 meal-header pl-2">🌙 Ceia (Absorção Lenta)</h3>
+                        <ul class="space-y-2">
+                            <li class="meal-item flex justify-between p-1"><span>Iogurte Natural Desnatado:</span> <span class="font-semibold">1 pote (170g)</span></li>
+                            <li class="flex justify-between p-1"><span>Fruta Barata (Ex: Maçã ou Pera):</span> <span class="font-semibold">1 porção</span></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <footer class="p-4 text-center text-sm text-gray-500 border-t mt-4">
+                Este plano é um guia nutricional sugerido. Consulte um nutricionista para um plano personalizado e ideal.
+            </footer>
+        </div>
+
+    </main>
+
+</body>
+</html>
+
