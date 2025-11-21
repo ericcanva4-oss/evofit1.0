@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* Fonte e fundo global */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+}
+
+.btn-ativo {
+    background-color: #7f1d1d !important;
+    border-bottom: 4px solid #fde047 !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.treino-dia {
+    display: none;
+    scroll-margin-top: 5rem;
+}
+
+.treino-dia.ativo {
+    display: block;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Animação usada quando o tempo acaba (piscar) */
+.time-up {
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.25; }
+}
+
+/* Ajustes simples para o display do cronômetro quando usado sem Tailwind */
+#timer-display { font-variant-numeric: tabular-nums; }

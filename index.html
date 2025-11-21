@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,695 +8,930 @@
 
     <!-- Script de autenticação ANTES de qualquer conteúdo -->
     <script>
-        (function(){
+        (function () {
             const path = location.pathname.split('/').pop();
-            if(path === 'login.html') return;
-            if(!sessionStorage.getItem('loggedIn')){
+            if (path === 'login.html') return;
+            if (!sessionStorage.getItem('loggedIn')) {
                 location.replace('login.html');
             }
         })();
     </script>
     <!-- Incluindo Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
     <!-- JavaScript externo para treinos -->
     <script src="treinos.js" defer></script>
-    <!-- Configuração de fonte (Inter) -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .btn-ativo {
-            background-color: #7f1d1d !important;
-            border-bottom: 4px solid #fde047 !important;
-            transition: all 0.2s ease-in-out;
-        }
-        .treino-dia {
-            display: none; 
-            scroll-margin-top: 5rem;
-        }
-        .treino-dia.ativo {
-            display: block;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .modal-content {
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-    </style>
 </head>
-<body class="antialiased">
 
+<body class="antialiased min-h-screen">
 
-<body class="min-h-screen">
+        <!-- Cabeçalho Principal com Menu Hambúrguer -->
+        <header class="bg-red-800 text-white p-4 relative">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span>
+                    </h1>
+                    <p class="text-sm mt-1">"Alcance seu Potencial!."</p>
+                </div>
+                <!-- Botão do Menu Hambúrguer -->
+                <button id="menu-toggle" class="text-white focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
 
-    <!-- Cabeçalho Principal com Menu Hambúrguer -->
-    <header class="bg-red-800 text-white p-4 relative">
-        <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-extrabold tracking-wider">EVO FITY <span class="text-yellow-300">1.0</span></h1>
-                <p class="text-sm mt-1">"Alcance seu Potencial!."</p>
+                <!-- Seção do Cronômetro de Descanso (FORA DO HEADER para não ficar fixo na barra superior) -->
+                <section class="max-w-4xl mx-auto px-4 pt-4 pb-2">
+                    <div class="bg-gray-800 text-white rounded-xl shadow-lg p-4 text-center">
+                        <h2 class="text-xl font-bold mb-3 text-yellow-300">Cronômetro de Descanso</h2>
+                        <div id="timer-display" class="text-6xl md:text-7xl font-mono font-extrabold mb-4 text-red-400">
+                            01:00</div>
+
+                        <div class="flex justify-center space-x-4">
+                            <button id="start-pause-btn"
+                                class="px-5 py-3 text-lg font-semibold rounded-full bg-green-600 hover:bg-green-700 transition duration-200 shadow-md active:scale-95">
+                                Iniciar
+                            </button>
+                            <button id="reset-btn"
+                                class="px-5 py-3 text-lg font-semibold rounded-full bg-gray-500 hover:bg-gray-600 transition duration-200 shadow-md active:scale-95">
+                                Reiniciar
+                            </button>
+                        </div>
+                        <!-- Menu Dropdown (Hambúrguer) -->
+                        <div id="menu-dropdown"
+                            class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
+                            <nav class="flex flex-col p-4 space-y-3">
+                                <a href="#dia1"
+                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
+                                    1 - Peito & Tríceps</a>
+                                <a href="#dia2"
+                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
+                                    2 - Costas & Bíceps</a>
+                                <a href="#dia3"
+                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
+                                    3 - Pernas & Posterior</a>
+                                <a href="#dia4"
+                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
+                                    4 - Ombro & Tríceps</a>
+                                <a href="#dia5"
+                                    class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia
+                                    5 - Costa & Braços</a>
+                                <hr class="border-red-700">
+                                <button id="menu-logout"
+                                    class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold">Sair</button>
+                            </nav>
+                        </div>
+        </header>
+
+
+
+        <!-- Conteúdo dos Treinos -->
+        <main class="container mx-auto p-4 md:p-6">
+
+            <!-- ========================================================================= -->
+            <!-- DIA 1: PEITO (FORÇA) E TRÍCEPS -->
+            <!-- ========================================================================= -->
+            <section id="dia1" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="1">
+                <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 1: Peito (Força) e
+                    Tríceps</h2>
+
+                <!-- 1. Supino Reto c/ Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">1. Supino Reto c/ Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 6-8</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 16kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Falha TOTAL entre 6ª e
+                            8ª repetição.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif';"
+                            alt="GIF do exercício Supino Reto com Halteres" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Supino Reto c/ Halteres" data-series="4" data-reps="6-8" data-carga="16kg (cada)"
+                        data-tecnica="Falha TOTAL entre 6ª e 8ª repetição."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 2. Supino Inclinado c/ Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">2. Supino Inclinado c/ Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de
+                            3 segundos.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif"
+                            onerror="this.onerror=null;this.src='https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif';"
+                            alt="GIF do exercício Supino Inclinado com Halteres"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Supino Inclinado c/ Halteres" data-series="3" data-reps="8-10"
+                        data-carga="12kg (cada)" data-tecnica="Negativa (descida) de 3 segundos."
+                        data-gif-url="https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 3. Crucifixo Inclinado c/ Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">3. Crucifixo Inclinado c/ Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 9kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco no SQUEEZE.
+                            Descanso 30s.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif';"
+                            alt="GIF do exercício Crucifixo Inclinado" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Crucifixo Inclinado c/ Halteres" data-series="3" data-reps="12-15"
+                        data-carga="9kg (cada)" data-tecnica="Foco no SQUEEZE. Descanso 30s."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 4. Desenvolvimento Ombro c/ Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">4. Desenvolvimento Ombro c/ Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Lutar pelas 8
+                            repetições limpas.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif';"
+                            alt="GIF do exercício Desenvolvimento Ombro" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Desenvolvimento Ombro c/ Halteres" data-series="3" data-reps="8-10"
+                        data-carga="10kg (cada)" data-tecnica="Lutar pelas 8 repetições limpas."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 5. Tríceps Pulley Barra -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Pulley Barra</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga alta, cotovelo
+                            fixo.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif"
+                            onerror="this.onerror=null;this.src='https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif';"
+                            alt="GIF do exercício Tríceps Pulley Barra" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Tríceps Pulley Barra" data-series="3" data-reps="8-10" data-carga="35kg"
+                        data-tecnica="Carga alta, cotovelo fixo."
+                        data-gif-url="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 6. Mergulho nas Paralelas (ou Banco) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">6. Mergulho nas Paralelas (ou Banco)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> Halter de 4kg a
+                            6kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Usar peso extra para
+                            falhar em 12 reps.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif';"
+                            alt="GIF do exercício Mergulho nas Paralelas" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Mergulho nas Paralelas (ou Banco)" data-series="3" data-reps="8-12"
+                        data-carga="4kg (extra)" data-tecnica="Usar peso extra para falhar em 12 reps."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================================= -->
+            <!-- DIA 2: COSTAS (LARGURA) E BÍCEPS -->
+            <!-- ========================================================================= -->
+            <section id="dia2" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="2">
+                <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 2: Costas (Largura)
+                    e Bíceps</h2>
+
+                <!-- 1. Puxada de Frente (Pegada Aberta) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">1. Puxada de Frente (Pegada Aberta)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 25kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Falha total. Puxar com
+                            os cotovelos.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif';"
+                            alt="GIF do exercício Puxada de Frente (Pegada Aberta)"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Puxada de Frente (Pegada Aberta)" data-series="4" data-reps="8-10" data-carga="25kg"
+                        data-tecnica="Falha total. Puxar com os cotovelos."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 2. Puxada Triângulo no Pulley -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">2. Puxada Triângulo no Pulley</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 15kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Descanso CURTO (30
+                            segundos).</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif';"
+                            alt="GIF do exercício Puxada Triângulo no Pulley"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Puxada Triângulo no Pulley" data-series="3" data-reps="10-12" data-carga="15kg"
+                        data-tecnica="Descanso CURTO (30 segundos)."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 3. Remada Baixa (Sentado) no Cabo -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">3. Remada Baixa (Sentado) no Cabo</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 60kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Espremer as escápulas
+                            na contração final.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif"
+                            onerror="this.onerror=null;this.src='https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif';"
+                            alt="GIF do exercício Remada Baixa" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Remada Baixa (Sentado) no Cabo" data-series="3" data-reps="8-10" data-carga="60kg"
+                        data-tecnica="Espremer as escápulas na contração final."
+                        data-gif-url="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 4. Remada Curvada Unilateral c/ Halter -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">4. Remada Curvada Unilateral c/ Halter</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10 (c/ braço)</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (c/ braço)
+                        </p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de
+                            3 segundos.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif';"
+                            alt="GIF do exercício Remada Curvada Unilateral" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Remada Curvada Unilateral c/ Halter" data-series="3" data-reps="10"
+                        data-carga="10kg (c/ braço)" data-tecnica="Negativa (descida) de 3 segundos."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 5. Rosca Direta Barra W -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">5. Rosca Direta Barra W</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 14kg (total, 7kg
+                            cada lado)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Sobrecarga. Lutar por
+                            8 reps limpas.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif';"
+                            alt="GIF do exercício Rosca Direta Barra W" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Rosca Direta Barra W" data-series="3" data-reps="8-10" data-carga="14kg (total)"
+                        data-tecnica="Sobrecarga. Lutar por 8 reps limpas."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 6. Rosca Inclinada Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">6. Rosca Inclinada Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg (c/ braço)
+                        </p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco na forma e falhar
+                            em 8 reps.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif';"
+                            alt="GIF do exercício Rosca Inclinada Halteres" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Rosca Inclinada Halteres" data-series="3" data-reps="8" data-carga="8kg (c/ braço)"
+                        data-tecnica="Foco na forma e falhar em 8 reps."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================================= -->
+            <!-- DIA 3: PERNAS (FORÇA) E POSTERIOR -->
+            <!-- ========================================================================= -->
+            <section id="dia3" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="3">
+                <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 3: Pernas (Força) e
+                    Posterior</h2>
+
+                <!-- 1. Agachamento na Máquina (Smith/Hack) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">1. Agachamento na Máquina (Smith/Hack)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 6-8</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 30kg a 35kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> AUMENTO BRUTAL DE
+                            CARGA! Falha técnica em 8 reps.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif';"
+                            alt="GIF do exercício Agachamento na Máquina" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Agachamento na Máquina (Smith/Hack)" data-series="4" data-reps="6-8"
+                        data-carga="30kg" data-tecnica="AUMENTO BRUTAL DE CARGA! Falha técnica em 8 reps."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 2. Leg Press 45º -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">2. Leg Press 45º</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 100kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga máxima que
+                            permita a amplitude.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif';"
+                            alt="GIF do exercício Leg Press 45º" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Leg Press 45º" data-series="3" data-reps="10-12" data-carga="100kg"
+                        data-tecnica="Carga máxima que permita a amplitude."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 3. Stiff com Halteres (Sua Flexora) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">3. Stiff com Halteres (Sua Flexora)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (c/ halter)
+                        </p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco total na descida
+                            lenta e alongamento.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif"
+                            onerror="this.onerror=null;this.src='https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif';"
+                            alt="GIF do exercício Stiff com Halteres" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Stiff com Halteres (Sua Flexora)" data-series="4" data-reps="10-12"
+                        data-carga="12kg (c/ halter)" data-tecnica="Foco total na descida lenta e alongamento."
+                        data-gif-url="https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 4. Avanço/Passada com Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">4. Avanço/Passada com Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10 (c/ perna)</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg a 10kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Pós-exaustão. Sem
+                            descanso entre as pernas.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif';"
+                            alt="GIF do exercício Avanço/Passada com Halteres"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Avanço/Passada com Halteres" data-series="3" data-reps="10"
+                        data-carga="8kg (c/ perna)" data-tecnica="Pós-exaustão. Sem descanso entre as pernas."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 5. Elevação Panturrilha em Pé c/ Barra -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">5. Elevação Panturrilha em Pé c/ Barra</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 15</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 40kg a 50kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga alta e amplitude
+                            total.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif';"
+                            alt="GIF do exercício Elevação Panturrilha" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Elevação Panturrilha em Pé c/ Barra" data-series="4" data-reps="15" data-carga="40kg"
+                        data-tecnica="Carga alta e amplitude total."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================================= -->
+            <!-- DIA 4: OMBROS (VOLUME) E TRÍCEPS -->
+            <!-- ========================================================================= -->
+            <section id="dia4" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="4">
+                <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 4: Ombros (Volume) e
+                    Tríceps</h2>
+
+                <!-- 1. Supino Inclinado com Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">1. Supino Inclinado com Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Pré-exaustão para
+                            peito superior.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif';"
+                            alt="GIF do exercício Supino Inclinado com Halteres"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Supino Inclinado com Halteres" data-series="3" data-reps="8-10"
+                        data-carga="12kg (cada)" data-tecnica="Pré-exaustão para peito superior."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 2. Crucifixo Inclinado com Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">2. Crucifixo Inclinado com Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Descanso 30s, lutar
+                            pelas 12 reps.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif';"
+                            alt="GIF do exercício Crucifixo Inclinado" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Crucifixo Inclinado com Halteres" data-series="3" data-reps="12-15"
+                        data-carga="8kg (cada)" data-tecnica="Descanso 30s, lutar pelas 12 reps."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 3. Elevação Lateral com Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">3. Elevação Lateral com Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 6kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> DROP-SET na última
+                            série (6kg -> 4kg) até a falha.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif';"
+                            alt="GIF do exercício Elevação Lateral" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Elevação Lateral com Halteres" data-series="4" data-reps="12-15"
+                        data-carga="6kg (cada)" data-tecnica="DROP-SET na última série (6kg -> 4kg) até a falha."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 4. Elevação Inclinada no Banco (Posterior) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">4. Elevação Inclinada no Banco (Posterior)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 3kg a 4kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Sem balanço. Foco na
+                            qualidade do movimento.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1"
+                            onerror="this.onerror=null;this.src='https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1';"
+                            alt="GIF do exercício Elevação Inclinada Posterior"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Elevação Inclinada no Banco (Posterior)" data-series="3" data-reps="10"
+                        data-carga="3kg (cada)" data-tecnica="Sem balanço. Foco na qualidade do movimento."
+                        data-gif-url="https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 5. Tríceps Testa com Halteres (ou Barra W) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Testa c/ Halteres (ou Barra W)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> (Sua carga de
+                            falha em 8)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) em
+                            3 segundos.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif"
+                            onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif';"
+                            alt="GIF do exercício Tríceps Testa" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Tríceps Testa c/ Halteres (ou Barra W)" data-series="3" data-reps="8-10"
+                        data-carga="10kg (total)" data-tecnica="Negativa (descida) em 3 segundos."
+                        data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 6. Tríceps Pulley Invertido (Supinado) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">6. Tríceps Pulley Invertido (Supinado)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Manter a alta carga.
+                        </p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif"
+                            onerror="this.onerror=null;this.src='https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif';"
+                            alt="GIF do exercício Tríceps Pulley Invertido" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Tríceps Pulley Invertido (Supinado)" data-series="3" data-reps="12-15"
+                        data-carga="35kg" data-tecnica="Manter a alta carga."
+                        data-gif-url="https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================================= -->
+            <!-- DIA 5: COSTAS (DENSIDADE) E BRAÇOS (FST-7) -->
+            <!-- ========================================================================= -->
+            <section id="dia5" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="5">
+                <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 5: Costas
+                    (Densidade) e Braços (FST-7)</h2>
+
+                <!-- 1. Remada Baixa (Sentado - Pegada Fechada) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">1. Remada Baixa (Sentado - Pegada Fechada)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 50kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Segurar a contração
+                            por 1 segundo.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif"
+                            onerror="this.onerror=null;this.src='https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif';"
+                            alt="GIF do exercício Remada Baixa Pegada Fechada"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Remada Baixa (Sentado - Pegada Fechada)" data-series="4" data-reps="8-10"
+                        data-carga="50kg" data-tecnica="Segurar a contração por 1 segundo."
+                        data-gif-url="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 2. Puxada de Frente (Pegada Pronada Fechada) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">2. Puxada de Frente (Pegada Pronada Fechada)
+                        </h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Amplitude total.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif';"
+                            alt="GIF do exercício Puxada de Frente Pegada Pronada Fechada"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Puxada de Frente (Pegada Pronada Fechada)" data-series="3" data-reps="10-12"
+                        data-carga="35kg" data-tecnica="Amplitude total."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 3. Rosca Martelo Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">3. Rosca Martelo Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Concentração no
+                            braquial.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif';"
+                            alt="GIF do exercício Rosca Martelo Halteres" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Rosca Martelo Halteres" data-series="3" data-reps="10" data-carga="10kg (cada)"
+                        data-tecnica="Concentração no braquial."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 4. Rosca Concentrada com Halteres -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">4. Rosca Concentrada com Halteres</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12 (c/ braço)</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de
+                            4 segundos.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif"
+                            onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif';"
+                            alt="GIF do exercício Rosca Concentrada com Halteres"
+                            class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Rosca Concentrada com Halteres" data-series="3" data-reps="12"
+                        data-carga="10kg (c/ braço)" data-tecnica="Negativa (descida) de 4 segundos."
+                        data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+                <!-- 5. Tríceps Corda no Pulley (FST-7) -->
+                <div
+                    class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Corda no Pulley (FST-7)</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 7</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 30kg</p>
+                        <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> PROTOCOLO FST-7: 7
+                            séries, 30 segundos de descanso APENAS.</p>
+                    </div>
+                    <div class="flex-none w-full md:w-1/4">
+                        <img src="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif"
+                            onerror="this.onerror=null;this.src='https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif';"
+                            alt="GIF do exercício Tríceps Corda no Pulley" class="w-full h-auto rounded-lg shadow-md">
+                    </div>
+                    <button
+                        class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
+                        data-nome="Tríceps Corda no Pulley (FST-7)" data-series="7" data-reps="10-12" data-carga="30kg"
+                        data-tecnica="PROTOCOLO FST-7: 7 séries, 30 segundos de descanso APENAS."
+                        data-gif-url="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif">
+                        Registrar Desempenho
+                    </button>
+                </div>
+
+
+
+            </section>
+
+        </main>
+
+        <!-- Modal de Registro de Desempenho (Sempre no fim do body) -->
+        <div id="performance-modal"
+            class="fixed inset-0 z-50 overflow-y-auto hidden opacity-0 transition-all duration-300 invisible modal-overlay flex items-center justify-center">
+            <div
+                class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 modal-content transform transition-all duration-300 scale-95">
+
+                <!-- Cabeçalho do Modal -->
+                <div class="flex justify-between items-start border-b pb-3 mb-4">
+                    <h2 id="modal-titulo" class="text-2xl font-extrabold text-red-800">Registrar Desempenho</h2>
+                    <button onclick="closeModal()"
+                        class="text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button>
+                </div>
+
+                <!-- Detalhes do Exercício -->
+                <div class="mb-4 bg-red-50 p-3 rounded-lg border border-red-200">
+                    <p class="text-lg font-semibold text-gray-700">Alvo:</p>
+                    <p class="text-sm text-gray-600"><span class="font-bold">Séries:</span> <span
+                            id="modal-series"></span> | <span class="font-bold">Reps:</span> <span
+                            id="modal-reps"></span> | <span class="font-bold">Carga:</span> <span
+                            id="modal-carga"></span></p>
+                    <p class="text-sm text-gray-600 mt-1"><span class="font-bold">Técnica:</span> <span
+                            id="modal-tecnica"></span></p>
+                </div>
+
+                <!-- GIF do Exercício -->
+                <div class="mb-4 text-center">
+                    <img id="modal-gif" src="" alt="Demonstração do Exercício"
+                        class="w-full h-48 object-cover rounded-lg shadow-md mx-auto">
+                </div>
+
+                <!-- Formulário de Input -->
+                <form id="performance-form"
+                    onsubmit="event.preventDefault(); salvarDesempenhoESugestao(currentTreinoId);">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <!-- Input Séries -->
+                        <div>
+                            <label for="input-series" class="block text-sm font-medium text-gray-700">Séries
+                                Realizadas</label>
+                            <input type="number" id="input-series" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500"
+                                min="1">
+                        </div>
+                        <!-- Input Repetições -->
+                        <div>
+                            <label for="input-reps" class="block text-sm font-medium text-gray-700">Repetições
+                                (Max)</label>
+                            <input type="number" id="input-reps" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500"
+                                min="1">
+                        </div>
+                        <!-- Input Carga -->
+                        <div>
+                            <label for="input-weight" class="block text-sm font-medium text-gray-700">Carga (kg)</label>
+                            <input type="number" step="0.5" id="input-weight" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500"
+                                min="0">
+                        </div>
+                    </div>
+
+                    <!-- Área de Exibição da Sugestão (Local) -->
+                    <div id="overload-suggestion"
+                        class="hidden p-4 bg-yellow-50 rounded-lg border border-yellow-300 mb-6">
+                        <!-- O conteúdo da sugestão será inserido aqui pelo JS -->
+                    </div>
+
+                    <!-- Botão de Ação -->
+                    <button type="submit" id="btn-salvar"
+                        class="w-full px-4 py-3 bg-red-800 text-white font-bold rounded-xl hover:bg-red-900 transition duration-150 shadow-lg">
+                        Gerar Sugestão de Treino
+                    </button>
+                </form>
+
+                <!-- Mensagem de Erro/Validação (removido alert()) -->
+                <div id="validation-message" class="mt-4 text-center text-red-600 font-semibold hidden"></div>
+
             </div>
-            <!-- Botão do Menu Hambúrguer -->
-            <button id="menu-toggle" class="text-white focus:outline-none">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
         </div>
 
-        <!-- Menu Dropdown (Hambúrguer) -->
-        <div id="menu-dropdown" class="hidden absolute top-full left-0 right-0 bg-red-900 shadow-lg rounded-b-lg">
-            <nav class="flex flex-col p-4 space-y-3">
-                <a href="#dia1" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia 1 - Peito & Tríceps</a>
-                <a href="#dia2" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia 2 - Costas & Bíceps</a>
-                <a href="#dia3" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia 3 - Pernas & Posterior</a>
-                <a href="#dia4" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia 4 - Ombro & Tríceps</a>
-                <a href="#dia5" class="menu-categoria text-white hover:bg-red-800 px-4 py-2 rounded transition duration-200">Dia 5 - Costa & Braços</a>
-                <hr class="border-red-700">
-                <button id="menu-logout" class="text-yellow-300 hover:bg-red-800 px-4 py-2 rounded transition duration-200 text-left font-semibold">Sair</button>
-            </nav>
-        </div>
-    </header>
 
 
+    </body>
 
-    <!-- Conteúdo dos Treinos -->
-    <main class="container mx-auto p-4 md:p-6">
-        
-        <!-- ========================================================================= -->
-        <!-- DIA 1: PEITO (FORÇA) E TRÍCEPS -->
-        <!-- ========================================================================= -->
-        <section id="dia1" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="1">
-            <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 1: Peito (Força) e Tríceps</h2>
-            
-            <!-- 1. Supino Reto c/ Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Supino Reto c/ Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 6-8</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 16kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Falha TOTAL entre 6ª e 8ª repetição.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif';" alt="GIF do exercício Supino Reto com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Supino Reto c/ Halteres" data-series="4" data-reps="6-8" data-carga="16kg (cada)" data-tecnica="Falha TOTAL entre 6ª e 8ª repetição." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-bench-press.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 2. Supino Inclinado c/ Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Supino Inclinado c/ Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de 3 segundos.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif" onerror="this.onerror=null;this.src='https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif';" alt="GIF do exercício Supino Inclinado com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Supino Inclinado c/ Halteres" data-series="3" data-reps="8-10" data-carga="12kg (cada)" data-tecnica="Negativa (descida) de 3 segundos." data-gif-url="https://static.wixstatic.com/media/2edbed_0519c5f6e5db4df08d392ae28784a177~mv2.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 3. Crucifixo Inclinado c/ Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Crucifixo Inclinado c/ Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 9kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco no SQUEEZE. Descanso 30s.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif';" alt="GIF do exercício Crucifixo Inclinado" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Crucifixo Inclinado c/ Halteres" data-series="3" data-reps="12-15" data-carga="9kg (cada)" data-tecnica="Foco no SQUEEZE. Descanso 30s." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 4. Desenvolvimento Ombro c/ Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">4. Desenvolvimento Ombro c/ Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Lutar pelas 8 repetições limpas.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif';" alt="GIF do exercício Desenvolvimento Ombro" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Desenvolvimento Ombro c/ Halteres" data-series="3" data-reps="8-10" data-carga="10kg (cada)" data-tecnica="Lutar pelas 8 repetições limpas." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/desenvolvimento-para-ombros-com-halteres.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 5. Tríceps Pulley Barra -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Pulley Barra</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga alta, cotovelo fixo.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif" onerror="this.onerror=null;this.src='https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif';" alt="GIF do exercício Tríceps Pulley Barra" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Tríceps Pulley Barra" data-series="3" data-reps="8-10" data-carga="35kg" data-tecnica="Carga alta, cotovelo fixo." data-gif-url="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 6. Mergulho nas Paralelas (ou Banco) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">6. Mergulho nas Paralelas (ou Banco)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> Halter de 4kg a 6kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Usar peso extra para falhar em 12 reps.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif';" alt="GIF do exercício Mergulho nas Paralelas" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Mergulho nas Paralelas (ou Banco)" data-series="3" data-reps="8-12" data-carga="4kg (extra)" data-tecnica="Usar peso extra para falhar em 12 reps." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/triceps-no-banco.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- DIA 2: COSTAS (LARGURA) E BÍCEPS -->
-        <!-- ========================================================================= -->
-        <section id="dia2" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="2">
-            <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 2: Costas (Largura) e Bíceps</h2>
-            
-            <!-- 1. Puxada de Frente (Pegada Aberta) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Puxada de Frente (Pegada Aberta)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 25kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Falha total. Puxar com os cotovelos.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif';" alt="GIF do exercício Puxada de Frente (Pegada Aberta)" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Puxada de Frente (Pegada Aberta)" data-series="4" data-reps="8-10" data-carga="25kg" data-tecnica="Falha total. Puxar com os cotovelos." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 2. Puxada Triângulo no Pulley -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Puxada Triângulo no Pulley</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 15kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Descanso CURTO (30 segundos).</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif';" alt="GIF do exercício Puxada Triângulo no Pulley" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Puxada Triângulo no Pulley" data-series="3" data-reps="10-12" data-carga="15kg" data-tecnica="Descanso CURTO (30 segundos)." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-para-frente-no-pulley-com-triangulo.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 3. Remada Baixa (Sentado) no Cabo -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Remada Baixa (Sentado) no Cabo</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 60kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Espremer as escápulas na contração final.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif" onerror="this.onerror=null;this.src='https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif';" alt="GIF do exercício Remada Baixa" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Remada Baixa (Sentado) no Cabo" data-series="3" data-reps="8-10" data-carga="60kg" data-tecnica="Espremer as escápulas na contração final." data-gif-url="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 4. Remada Curvada Unilateral c/ Halter -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">4. Remada Curvada Unilateral c/ Halter</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10 (c/ braço)</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (c/ braço)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de 3 segundos.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif';" alt="GIF do exercício Remada Curvada Unilateral" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Remada Curvada Unilateral c/ Halter" data-series="3" data-reps="10" data-carga="10kg (c/ braço)" data-tecnica="Negativa (descida) de 3 segundos." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-remada-unilateral-com-halter-serrote-no-banco.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 5. Rosca Direta Barra W -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">5. Rosca Direta Barra W</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 14kg (total, 7kg cada lado)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Sobrecarga. Lutar por 8 reps limpas.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif';" alt="GIF do exercício Rosca Direta Barra W" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Rosca Direta Barra W" data-series="3" data-reps="8-10" data-carga="14kg (total)" data-tecnica="Sobrecarga. Lutar por 8 reps limpas." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/12/rosca-direta-com-barra-w.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 6. Rosca Inclinada Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">6. Rosca Inclinada Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg (c/ braço)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco na forma e falhar em 8 reps.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif';" alt="GIF do exercício Rosca Inclinada Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Rosca Inclinada Halteres" data-series="3" data-reps="8" data-carga="8kg (c/ braço)" data-tecnica="Foco na forma e falhar em 8 reps." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-com-halteres-no-banco-inclinado.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- DIA 3: PERNAS (FORÇA) E POSTERIOR -->
-        <!-- ========================================================================= -->
-        <section id="dia3" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="3">
-            <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 3: Pernas (Força) e Posterior</h2>
-            
-            <!-- 1. Agachamento na Máquina (Smith/Hack) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Agachamento na Máquina (Smith/Hack)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 6-8</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 30kg a 35kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> AUMENTO BRUTAL DE CARGA! Falha técnica em 8 reps.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif';" alt="GIF do exercício Agachamento na Máquina" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Agachamento na Máquina (Smith/Hack)" data-series="4" data-reps="6-8" data-carga="30kg" data-tecnica="AUMENTO BRUTAL DE CARGA! Falha técnica em 8 reps." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2017/11/smith-full-squat.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 2. Leg Press 45º -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Leg Press 45º</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 100kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga máxima que permita a amplitude.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif';" alt="GIF do exercício Leg Press 45º" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Leg Press 45º" data-series="3" data-reps="10-12" data-carga="100kg" data-tecnica="Carga máxima que permita a amplitude." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/pernas-leg-press-45-com-pes-distantes.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 3. Stiff com Halteres (Sua Flexora) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Stiff com Halteres (Sua Flexora)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (c/ halter)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Foco total na descida lenta e alongamento.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif" onerror="this.onerror=null;this.src='https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif';" alt="GIF do exercício Stiff com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Stiff com Halteres (Sua Flexora)" data-series="4" data-reps="10-12" data-carga="12kg (c/ halter)" data-tecnica="Foco total na descida lenta e alongamento." data-gif-url="https://static.wixstatic.com/media/2edbed_55a430e4acac472bb96e549253e655a3~mv2.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 4. Avanço/Passada com Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">4. Avanço/Passada com Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10 (c/ perna)</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg a 10kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Pós-exaustão. Sem descanso entre as pernas.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif';" alt="GIF do exercício Avanço/Passada com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Avanço/Passada com Halteres" data-series="3" data-reps="10" data-carga="8kg (c/ perna)" data-tecnica="Pós-exaustão. Sem descanso entre as pernas." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2023/12/dumbbell-lunge.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 5. Elevação Panturrilha em Pé c/ Barra -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">5. Elevação Panturrilha em Pé c/ Barra</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 15</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 40kg a 50kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Carga alta e amplitude total.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif';" alt="GIF do exercício Elevação Panturrilha" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Elevação Panturrilha em Pé c/ Barra" data-series="4" data-reps="15" data-carga="40kg" data-tecnica="Carga alta e amplitude total." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2021/03/Elevacao-de-panturrilha-com-barra.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-        </section>
-        
-        <!-- ========================================================================= -->
-        <!-- DIA 4: OMBROS (VOLUME) E TRÍCEPS -->
-        <!-- ========================================================================= -->
-        <section id="dia4" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="4">
-            <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 4: Ombros (Volume) e Tríceps</h2>
-            
-            <!-- 1. Supino Inclinado com Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Supino Inclinado com Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 12kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Pré-exaustão para peito superior.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif';" alt="GIF do exercício Supino Inclinado com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Supino Inclinado com Halteres" data-series="3" data-reps="8-10" data-carga="12kg (cada)" data-tecnica="Pré-exaustão para peito superior." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/supino-inclinado-com-halteres.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 2. Crucifixo Inclinado com Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Crucifixo Inclinado com Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 8kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Descanso 30s, lutar pelas 12 reps.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif';" alt="GIF do exercício Crucifixo Inclinado" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Crucifixo Inclinado com Halteres" data-series="3" data-reps="12-15" data-carga="8kg (cada)" data-tecnica="Descanso 30s, lutar pelas 12 reps." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2020/06/dumbbell-incline-fly.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 3. Elevação Lateral com Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Elevação Lateral com Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 6kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> DROP-SET na última série (6kg -> 4kg) até a falha.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif';" alt="GIF do exercício Elevação Lateral" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Elevação Lateral com Halteres" data-series="4" data-reps="12-15" data-carga="6kg (cada)" data-tecnica="DROP-SET na última série (6kg -> 4kg) até a falha." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/05/elevacao-lateral-com-halteres-inclinada.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 4. Elevação Inclinada no Banco (Posterior) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">4. Elevação Inclinada no Banco (Posterior)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 3kg a 4kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Sem balanço. Foco na qualidade do movimento.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1" onerror="this.onerror=null;this.src='https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1';" alt="GIF do exercício Elevação Inclinada Posterior" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Elevação Inclinada no Banco (Posterior)" data-series="3" data-reps="10" data-carga="3kg (cada)" data-tecnica="Sem balanço. Foco na qualidade do movimento." data-gif-url="https://i0.wp.com/omelhortreino.com.br/wp-content/uploads/2025/04/Serrote-1.gif?resize=550%2C550&ssl=1">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 5. Tríceps Testa com Halteres (ou Barra W) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Testa c/ Halteres (ou Barra W)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> (Sua carga de falha em 8)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) em 3 segundos.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif" onerror="this.onerror=null;this.src='https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif';" alt="GIF do exercício Tríceps Testa" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Tríceps Testa c/ Halteres (ou Barra W)" data-series="3" data-reps="8-10" data-carga="10kg (total)" data-tecnica="Negativa (descida) em 3 segundos." data-gif-url="https://www.hipertrofia.org/blog/wp-content/uploads/2024/02/barbell-lying-triceps-extension-skull-crusher.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 6. Tríceps Pulley Invertido (Supinado) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">6. Tríceps Pulley Invertido (Supinado)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12-15</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Manter a alta carga.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif" onerror="this.onerror=null;this.src='https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif';" alt="GIF do exercício Tríceps Pulley Invertido" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Tríceps Pulley Invertido (Supinado)" data-series="3" data-reps="12-15" data-carga="35kg" data-tecnica="Manter a alta carga." data-gif-url="https://treinoemalta.com.br/wp-content/uploads/2023/07/Triceps-Pulley-Barra.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- DIA 5: COSTAS (DENSIDADE) E BRAÇOS (FST-7) -->
-        <!-- ========================================================================= -->
-        <section id="dia5" class="treino-dia p-4 bg-white rounded-xl shadow-lg mb-6" data-treino-id="5">
-            <h2 class="text-3xl font-bold text-red-800 mb-6 border-b-2 border-red-200 pb-2">Dia 5: Costas (Densidade) e Braços (FST-7)</h2>
-            
-            <!-- 1. Remada Baixa (Sentado - Pegada Fechada) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Remada Baixa (Sentado - Pegada Fechada)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 4</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 8-10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 50kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Segurar a contração por 1 segundo.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif" onerror="this.onerror=null;this.src='https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif';" alt="GIF do exercício Remada Baixa Pegada Fechada" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Remada Baixa (Sentado - Pegada Fechada)" data-series="4" data-reps="8-10" data-carga="50kg" data-tecnica="Segurar a contração por 1 segundo." data-gif-url="https://media.tenor.com/vy_b35185M0AAAAM/remada-baixa-triangulo.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-            
-            <!-- 2. Puxada de Frente (Pegada Pronada Fechada) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Puxada de Frente (Pegada Pronada Fechada)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 35kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Amplitude total.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif';" alt="GIF do exercício Puxada de Frente Pegada Pronada Fechada" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Puxada de Frente (Pegada Pronada Fechada)" data-series="3" data-reps="10-12" data-carga="35kg" data-tecnica="Amplitude total." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/costas-puxada-aberta-com-barra-no-pulley.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 3. Rosca Martelo Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Rosca Martelo Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Concentração no braquial.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif';" alt="GIF do exercício Rosca Martelo Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Rosca Martelo Halteres" data-series="3" data-reps="10" data-carga="10kg (cada)" data-tecnica="Concentração no braquial." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-biceps-martelo-com-halteres.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 4. Rosca Concentrada com Halteres -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">4. Rosca Concentrada com Halteres</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 3</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 12 (c/ braço)</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 10kg (cada)</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> Negativa (descida) de 4 segundos.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif" onerror="this.onerror=null;this.src='https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif';" alt="GIF do exercício Rosca Concentrada com Halteres" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Rosca Concentrada com Halteres" data-series="3" data-reps="12" data-carga="10kg (c/ braço)" data-tecnica="Negativa (descida) de 4 segundos." data-gif-url="https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/rosca-concentrada-unilateral-com-halter.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-            <!-- 5. Tríceps Corda no Pulley (FST-7) -->
-            <div class="exercicio-card border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50 flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">5. Tríceps Corda no Pulley (FST-7)</h3>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Séries:</span> 7</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Repetições:</span> 10-12</p>
-                    <p class="text-gray-600 mb-2"><span class="font-semibold">Carga Mínima:</span> 30kg</p>
-                    <p class="text-gray-600 mb-4"><span class="font-semibold">Técnica:</span> PROTOCOLO FST-7: 7 séries, 30 segundos de descanso APENAS.</p>
-                </div>
-                <div class="flex-none w-full md:w-1/4">
-                    <img src="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif" onerror="this.onerror=null;this.src='https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif';" alt="GIF do exercício Tríceps Corda no Pulley" class="w-full h-auto rounded-lg shadow-md">
-                </div>
-                <button class="btn-registrar mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition duration-150"
-                    data-nome="Tríceps Corda no Pulley (FST-7)" data-series="7" data-reps="10-12" data-carga="30kg" data-tecnica="PROTOCOLO FST-7: 7 séries, 30 segundos de descanso APENAS." data-gif-url="https://media.tenor.com/mbebKudZjxYAAAAM/tr%C3%ADceps-pulley.gif">
-                    Registrar Desempenho
-                </button>
-            </div>
-
-
-            
-        </section>
-
-    </main>
-
-    <!-- Modal de Registro de Desempenho (Sempre no fim do body) -->
-    <div id="performance-modal" class="fixed inset-0 z-50 overflow-y-auto hidden opacity-0 transition-all duration-300 invisible modal-overlay flex items-center justify-center">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 modal-content transform transition-all duration-300 scale-95">
-            
-            <!-- Cabeçalho do Modal -->
-            <div class="flex justify-between items-start border-b pb-3 mb-4">
-                <h2 id="modal-titulo" class="text-2xl font-extrabold text-red-800">Registrar Desempenho</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button>
-            </div>
-
-            <!-- Detalhes do Exercício -->
-            <div class="mb-4 bg-red-50 p-3 rounded-lg border border-red-200">
-                <p class="text-lg font-semibold text-gray-700">Alvo:</p>
-                <p class="text-sm text-gray-600"><span class="font-bold">Séries:</span> <span id="modal-series"></span> | <span class="font-bold">Reps:</span> <span id="modal-reps"></span> | <span class="font-bold">Carga:</span> <span id="modal-carga"></span></p>
-                <p class="text-sm text-gray-600 mt-1"><span class="font-bold">Técnica:</span> <span id="modal-tecnica"></span></p>
-            </div>
-            
-            <!-- GIF do Exercício -->
-            <div class="mb-4 text-center">
-                <img id="modal-gif" src="" alt="Demonstração do Exercício" class="w-full h-48 object-cover rounded-lg shadow-md mx-auto">
-            </div>
-
-            <!-- Formulário de Input -->
-            <form id="performance-form" onsubmit="event.preventDefault(); salvarDesempenhoESugestao(currentTreinoId);">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <!-- Input Séries -->
-                    <div>
-                        <label for="input-series" class="block text-sm font-medium text-gray-700">Séries Realizadas</label>
-                        <input type="number" id="input-series" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500" min="1">
-                    </div>
-                    <!-- Input Repetições -->
-                    <div>
-                        <label for="input-reps" class="block text-sm font-medium text-gray-700">Repetições (Max)</label>
-                        <input type="number" id="input-reps" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500" min="1">
-                    </div>
-                    <!-- Input Carga -->
-                    <div>
-                        <label for="input-weight" class="block text-sm font-medium text-gray-700">Carga (kg)</label>
-                        <input type="number" step="0.5" id="input-weight" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-red-500 focus:border-red-500" min="0">
-                    </div>
-                </div>
-
-                <!-- Área de Exibição da Sugestão (Local) -->
-                <div id="overload-suggestion" class="hidden p-4 bg-yellow-50 rounded-lg border border-yellow-300 mb-6">
-                    <!-- O conteúdo da sugestão será inserido aqui pelo JS -->
-                </div>
-
-                <!-- Botão de Ação -->
-                <button type="submit" id="btn-salvar" class="w-full px-4 py-3 bg-red-800 text-white font-bold rounded-xl hover:bg-red-900 transition duration-150 shadow-lg">
-                    Gerar Sugestão de Treino
-                </button>
-            </form>
-            
-            <!-- Mensagem de Erro/Validação (removido alert()) -->
-            <div id="validation-message" class="mt-4 text-center text-red-600 font-semibold hidden"></div>
-
-        </div>
-    </div>
-
-
-
-</body>
 </html>

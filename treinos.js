@@ -5,6 +5,110 @@ let currentTreinoId = null;
 let modal, modalTitulo, modalSeries, modalReps, modalCarga, modalTecnica, modalGif;
 let inputSeries, inputReps, inputWeight, overloadSuggestion, btnSalvar, validationMessage;
 
+// -----------------------------
+// Cronômetro de Descanso
+// -----------------------------
+let timerInterval = null;
+let timeRemaining = 60; // segundos
+let isRunning = false;
+const defaultTime = 60;
+
+let timerDisplayEl = null;
+let startPauseBtnEl = null;
+let resetBtnEl = null;
+let timerContainerEl = null;
+
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+}
+
+function updateTimerDisplay() {
+    if (!timerDisplayEl) return;
+    timerDisplayEl.textContent = formatTime(timeRemaining);
+    // cores via classes do Tailwind
+    if (timeRemaining <= 10 && timeRemaining > 0) {
+        timerDisplayEl.classList.remove('text-red-400', 'text-green-500');
+        timerDisplayEl.classList.add('text-yellow-400');
+    } else if (timeRemaining === 0) {
+        timerDisplayEl.classList.remove('text-yellow-400', 'text-red-400');
+        timerDisplayEl.classList.add('text-red-500');
+    } else {
+        timerDisplayEl.classList.remove('text-yellow-400', 'text-green-500');
+        timerDisplayEl.classList.add('text-red-400');
+    }
+}
+
+function startTimer() {
+    if (isRunning) return;
+    if (timeRemaining <= 0) timeRemaining = defaultTime;
+    isRunning = true;
+    if (startPauseBtnEl) {
+        startPauseBtnEl.textContent = 'Pausar';
+        startPauseBtnEl.classList.remove('bg-green-600');
+        startPauseBtnEl.classList.add('bg-orange-600');
+    }
+    if (timerContainerEl) timerContainerEl.classList.remove('time-up');
+
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            if (startPauseBtnEl) {
+                startPauseBtnEl.textContent = 'Tempo Esgotado!';
+                startPauseBtnEl.classList.remove('bg-orange-600');
+                startPauseBtnEl.classList.add('bg-red-600');
+            }
+            if (timerContainerEl) timerContainerEl.classList.add('time-up');
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    isRunning = false;
+    if (startPauseBtnEl) {
+        startPauseBtnEl.textContent = 'Continuar';
+        startPauseBtnEl.classList.remove('bg-orange-600');
+        startPauseBtnEl.classList.add('bg-green-600');
+    }
+}
+
+function toggleTimer() {
+    if (isRunning) pauseTimer(); else startTimer();
+}
+
+function resetTimer(newTime = defaultTime) {
+    pauseTimer();
+    timeRemaining = newTime;
+    updateTimerDisplay();
+    if (startPauseBtnEl) {
+        startPauseBtnEl.textContent = 'Iniciar';
+        startPauseBtnEl.classList.remove('bg-orange-600', 'bg-red-600');
+        startPauseBtnEl.classList.add('bg-green-600');
+    }
+    if (timerContainerEl) timerContainerEl.classList.remove('time-up');
+}
+
+function inicializarCronometro() {
+    timerDisplayEl = document.getElementById('timer-display');
+    startPauseBtnEl = document.getElementById('start-pause-btn');
+    resetBtnEl = document.getElementById('reset-btn');
+    timerContainerEl = document.querySelector('.bg-gray-800');
+    if (!timerDisplayEl) return;
+    updateTimerDisplay();
+    if (startPauseBtnEl) startPauseBtnEl.addEventListener('click', toggleTimer);
+    if (resetBtnEl) resetBtnEl.addEventListener('click', () => resetTimer(defaultTime));
+}
+
+
 // --- Persistência por usuário (localStorage) ---
 function getCurrentUsername() {
     const u = sessionStorage.getItem('username');
@@ -216,6 +320,9 @@ function inicializarModal() {
     overloadSuggestion = document.getElementById('overload-suggestion');
     btnSalvar = document.getElementById('btn-salvar');
     validationMessage = document.getElementById('validation-message');
+
+    // Inicializa o cronômetro (elementos do DOM já estão disponíveis aqui)
+    inicializarCronometro();
 
     // Persistência ao editar inputs: salva carga/reps por treino para o usuário
     function persistCurrentInputs() {
